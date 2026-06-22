@@ -17,8 +17,6 @@ async function fetchMenu() {
         updateCartUI();
     } catch (err) {
         console.error("Fetch Error:", err);
-        document.getElementById('menu-container').innerHTML = 
-            `<h2 style="text-align:center; padding:50px; color:red;">⚠️ Failed to load menu. Ensure products.json is in the same folder.</h2>`;
     }
 }
 
@@ -71,11 +69,14 @@ function renderProductCard(p) {
     let variantsHTML = "";
 
     if (p.hasVariants) {
+        // We set ID for the price display specifically
         priceHTML = `<span id="price-p-${p.id}">Rs. ${p.variants[0].price}</span>`;
         variantsHTML = `<div class="variants" id="v-cont-${p.id}">` +
             p.variants.map((v, i) => `
                 <button class="v-btn ${i === 0 ? 'selected' : ''}" 
-                        onclick="setVariant('${p.id}', '${v.size}', ${v.price}, this)">
+                        data-price="${v.price}" 
+                        data-size="${v.size}"
+                        onclick="setVariant('${p.id}', this)">
                     ${v.size}
                 </button>
             `).join('') + `</div>`;
@@ -90,43 +91,64 @@ function renderProductCard(p) {
                 <h3 class="card-title">${p.name}</h3>
                 <p class="card-desc">${p.desc || ''}</p>
                 ${variantsHTML}
-                <div class="card-price">${priceHTML}</div>
+                <div class="card-price" id="final-p-${p.id}">${priceHTML}</div>
                 <button class="btn btn-primary" onclick="addToCart('${p.id}')">+ Add to Cart</button>
             </div>
         </div>
     `;
 }
 
-function setVariant(pid, size, price, el) {
-    const parent = document.getElementById(`v-cont-${pid}`);
-    parent.querySelectorAll('.v-btn').forEach(b => b.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById(`price-p-${pid}`).innerText = `Rs. ${price}`;
+// Fixed variant selection logic
+function setVariant(pid, btnElement) {
+    const container = document.getElementById(`v-cont-${pid}`);
+    
+    // 1. Visually un-select other buttons
+    container.querySelectorAll('.v-btn').forEach(btn => btn.classList.remove('selected'));
+    
+    // 2. Select the current button
+    btnElement.classList.add('selected');
+    
+    // 3. Get values from the clicked button's Data Attributes
+    const newPrice = btnElement.getAttribute('data-price');
+    
+    // 4. Update the Price Display in the card
+    document.getElementById(`price-p-${pid}`).innerText = `Rs. ${newPrice}`;
 }
 
+// Fixed Add To Cart Logic
 function addToCart(pid) {
-    let product = null;
+    // 1. Find the basic product data
+    let productData = null;
     menuData.categories.forEach(c => {
         const found = c.products.find(x => x.id === pid);
-        if (found) product = found;
+        if (found) productData = found;
     });
 
-    let size = null;
-    let price = product.price;
+    let selectedSize = null;
+    let selectedPrice = productData.price;
 
-    if (product.hasVariants) {
-        const btn = document.querySelector(`#v-cont-${pid} .selected`);
-        size = btn.innerText;
-        price = product.variants.find(v => v.size === size).price;
+    // 2. If it has sizes, find WHICH button has the 'selected' class
+    if (productData.hasVariants) {
+        const selectedBtn = document.querySelector(`#v-cont-${pid} .v-btn.selected`);
+        selectedSize = selectedBtn.getAttribute('data-size');
+        selectedPrice = parseInt(selectedBtn.getAttribute('data-price'));
     }
 
-    const cartId = size ? `${pid}-${size}` : pid;
-    const exists = cart.find(i => i.cartId === cartId);
-
+    // 3. Create unique cart ID based on Size + Product ID
+    const cartId = selectedSize ? `${pid}-${selectedSize}` : pid;
+    
+    // 4. Add to cart logic
+    const exists = cart.find(item => item.cartId === cartId);
     if (exists) {
         exists.qty++;
     } else {
-        cart.push({ cartId, name: product.name, size, price, qty: 1 });
+        cart.push({
+            cartId: cartId,
+            name: productData.name,
+            size: selectedSize,
+            price: selectedPrice,
+            qty: 1
+        });
     }
 
     animateFlame();
@@ -138,6 +160,12 @@ function updateCartUI() {
     const list = document.getElementById('cart-items-list');
     document.getElementById('cart-count').innerText = cart.reduce((s, i) => s + i.qty, 0);
     
+    if(cart.length === 0) {
+        list.innerHTML = `<p style="text-align:center; padding:30px; color:#888;">Your cart is empty.</p>`;
+        document.getElementById('cart-total-amount').innerText = `Rs. 0`;
+        return;
+    }
+
     list.innerHTML = cart.map((item, idx) => `
         <div class="cart-item-row">
             <div>
@@ -147,14 +175,14 @@ function updateCartUI() {
             </div>
             <div class="qty-ctrl">
                 <button onclick="changeQty(${idx}, -1)">-</button>
-                <span>${item.qty}</span>
+                <span style="font-weight:600; min-width:15px; text-align:center">${item.qty}</span>
                 <button onclick="changeQty(${idx}, 1)">+</button>
             </div>
         </div>
     `).join('');
 
-    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    document.getElementById('cart-total-amount').innerText = `Rs. ${total.toLocaleString()}`;
+    const total = cart.reduce((s, i) => s + (itemPriceTotal = i.price * i.qty), 0);
+    document.getElementById('cart-total-amount').innerText = `Rs. ${cart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString()}`;
 }
 
 function changeQty(idx, diff) {
@@ -176,7 +204,10 @@ function animateFlame() {
 }
 
 function saveCart() { localStorage.setItem('yum_cart', JSON.stringify(cart)); }
-function openCheckout() { document.getElementById('checkout-modal').classList.add('open'); }
+function openCheckout() { 
+    if(cart.length === 0) return alert("Cart is empty!");
+    document.getElementById('checkout-modal').classList.add('open'); 
+}
 function closeModal() { document.getElementById('checkout-modal').classList.remove('open'); }
 function toggleAddress(v) { document.getElementById('address-field').style.display = v ? 'block' : 'none'; }
 
@@ -184,15 +215,27 @@ function sendToWhatsApp() {
     const name = document.getElementById('order-name').value;
     const type = document.querySelector('input[name="otype"]:checked').value;
     const addr = document.getElementById('order-address').value;
-    if(!name) return alert("Please enter name");
+    
+    if(!name) return alert("Please enter your name");
+    if(type === 'Delivery' && !addr) return alert("Please enter delivery address");
 
-    let text = `*New Order - Yumilicious*\nCustomer: ${name}\nType: ${type}\n`;
-    if(type === 'Delivery') text += `Address: ${addr}\n`;
-    text += `\n*Items:*\n`;
-    cart.forEach(i => text += `• ${i.qty}x ${i.name} [${i.size||''}] - Rs.${i.price*i.qty}\n`);
-    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    text += `\n*TOTAL: Rs. ${total.toLocaleString()}*`;
+    let text = `*New Order from Yumilicious Website* 🍕\n--------------------------------\n👤 *Customer:* ${name}\n📦 *Order Type:* ${type}\n`;
+    if(type === 'Delivery') text += `🏠 *Address:* ${addr}\n`;
+    text += `--------------------------------\n🛒 *Items Details:*\n`;
+    
+    cart.forEach(i => {
+        text += `• ${i.qty}x ${i.name} ${i.size ? '['+i.size+']' : ''} - Rs. ${(i.price * i.qty).toLocaleString()}\n`;
+    });
+    
+    const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    text += `--------------------------------\n💰 *Total Amount: Rs. ${totalAmount.toLocaleString()}*`;
 
-    window.open(`https://wa.me/${menuData.restaurant.whatsapp}?text=${encodeURIComponent(text)}`);
-    cart = []; saveCart(); updateCartUI(); closeModal(); toggleCart();
+    const waLink = `https://wa.me/${menuData.restaurant.whatsapp}?text=${encodeURIComponent(text)}`;
+    window.open(waLink, '_blank');
+    
+    cart = [];
+    saveCart();
+    updateCartUI();
+    closeModal();
+    toggleCart();
 }
