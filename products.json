@@ -7,7 +7,7 @@
     "hours": "24 Hours",
     "bannerImage": "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop",
     "bannerTagline": "Taste the Yum. Feel the Vibe.",
-    "logoImage": "images/logo.png"
+    "logoImage": "https://placehold.co/200x200/C0392B/FFF8F0?text=YUMILICIOUS"
   },
   "categories": [
     {
@@ -15,156 +15,12 @@
       "name": "Old School Pizzas",
       "icon": "🍕",
       "products": [
-        {
-          "id": "osp-1",
-          "name": "Chicken Tikka Pizza",
-          "desc": "Smoky chicken tikka, melty cheese and bold flavor.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Chicken+Tikka",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 550
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1099
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1550
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2290
-            }
-          ]
-        },
-        {
-          "id": "osp-2",
-          "name": "Creamy Melt Pizza",
-          "desc": "Rich, cheesy pizza loaded with creamy flavor.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Creamy+Melt",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 550
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1099
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1550
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2290
-            }
-          ]
-        },
-        {
-          "id": "osp-3",
-          "name": "Fajita Pizza",
-          "desc": "Topped with juicy fajita chicken and bold spices.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Fajita",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 550
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1099
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1550
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2290
-            }
-          ]
-        },
-        {
-          "id": "osp-4",
-          "name": "Creamy Tikka Pizza",
-          "desc": "Creamy sauce and tender chicken tikka goodness.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Creamy+Tikka",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 550
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1099
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1550
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2290
-            }
-          ]
-        },
-        {
-          "id": "osp-5",
-          "name": "Chicken Supreme Pizza",
-          "desc": "Loaded with flavorful chicken and hearty toppings.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Supreme",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 550
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1099
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1550
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2290
-            }
-          ]
-        },
-        {
-          "id": "osp-6",
-          "name": "Chicken Mexican Pizza",
-          "desc": "Mexican-inspired flavor with cheesy delight.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Mexican",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 550
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1099
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1550
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2290
-            }
-          ]
-        }
+        { "id": "osp-1", "name": "Chicken Tikka Pizza", "desc": "Smoky chicken tikka, melty cheese and bold flavor.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Chicken+Tikka", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 550 }, { "size": "Medium 9\"", "price": 1099 }, { "size": "Large 12\"", "price": 1550 }, { "size": "X-Large 12\"", "price": 2290 } ] },
+        { "id": "osp-2", "name": "Creamy Melt Pizza", "desc": "Rich, cheesy pizza loaded with creamy flavor.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Creamy+Melt", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 550 }, { "size": "Medium 9\"", "price": 1099 }, { "size": "Large 12\"", "price": 1550 }, { "size": "X-Large 12\"", "price": 2290 } ] },
+        { "id": "osp-3", "name": "Fajita Pizza", "desc": "Topped with juicy fajita chicken and bold spices.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Fajita", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 550 }, { "size": "Medium 9\"", "price": 1099 }, { "size": "Large 12\"", "price": 1550 }, { "size": "X-Large 12\"", "price": 2290 } ] },
+        { "id": "osp-4", "name": "Creamy Tikka Pizza", "desc": "Creamy sauce and tender chicken tikka goodness.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Creamy+Tikka", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 550 }, { "size": "Medium 9\"", "price": 1099 }, { "size": "Large 12\"", "price": 1550 }, { "size": "X-Large 12\"", "price": 2290 } ] },
+        { "id": "osp-5", "name": "Chicken Supreme Pizza", "desc": "Loaded with flavorful chicken and hearty toppings.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Supreme", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 550 }, { "size": "Medium 9\"", "price": 1099 }, { "size": "Large 12\"", "price": 1550 }, { "size": "X-Large 12\"", "price": 2290 } ] },
+        { "id": "osp-6", "name": "Chicken Mexican Pizza", "desc": "Mexican-inspired flavor with cheesy delight.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Mexican", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 550 }, { "size": "Medium 9\"", "price": 1099 }, { "size": "Large 12\"", "price": 1550 }, { "size": "X-Large 12\"", "price": 2290 } ] }
       ]
     },
     {
@@ -172,156 +28,12 @@
       "name": "Blockbuster Pizzas",
       "icon": "🔥",
       "products": [
-        {
-          "id": "bbp-1",
-          "name": "Yumilicious Special Pizza",
-          "desc": "Flavor-packed special loaded with premium toppings.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Special",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 600
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1199
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1750
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2450
-            }
-          ]
-        },
-        {
-          "id": "bbp-2",
-          "name": "Double Cheese Pizza",
-          "desc": "Twice the cheese, twice the satisfaction.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Double+Cheese",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 600
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1199
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1750
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2450
-            }
-          ]
-        },
-        {
-          "id": "bbp-3",
-          "name": "Malai Boti Pizza",
-          "desc": "Creamy malai boti flavor layered with cheese.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Malai+Boti",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 600
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1199
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1750
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2450
-            }
-          ]
-        },
-        {
-          "id": "bbp-4",
-          "name": "Kabab Crust Pizza",
-          "desc": "Flavorful pizza with juicy kabab-filled crust.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Kabab+Crust",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 600
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1199
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1750
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2450
-            }
-          ]
-        },
-        {
-          "id": "bbp-5",
-          "name": "Crown Crust Pizza",
-          "desc": "Royal treat with stuffed crown crust.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Crown+Crust",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 600
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1199
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1750
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2450
-            }
-          ]
-        },
-        {
-          "id": "bbp-6",
-          "name": "Crispy Twist Pizza",
-          "desc": "Crispy cheesy pizza with fun twists in every bite.",
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Crispy+Twist",
-          "hasVariants": true,
-          "variants": [
-            {
-              "size": "Small 6\"",
-              "price": 600
-            },
-            {
-              "size": "Medium 9\"",
-              "price": 1199
-            },
-            {
-              "size": "Large 12\"",
-              "price": 1750
-            },
-            {
-              "size": "X-Large 12\"",
-              "price": 2450
-            }
-          ]
-        }
+        { "id": "bbp-1", "name": "Yumilicious Special Pizza", "desc": "Flavor-packed special loaded with premium toppings.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Special", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 600 }, { "size": "Medium 9\"", "price": 1199 }, { "size": "Large 12\"", "price": 1750 }, { "size": "X-Large 12\"", "price": 2450 } ] },
+        { "id": "bbp-2", "name": "Double Cheese Pizza", "desc": "Twice the cheese, twice the satisfaction.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Double+Cheese", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 600 }, { "size": "Medium 9\"", "price": 1199 }, { "size": "Large 12\"", "price": 1750 }, { "size": "X-Large 12\"", "price": 2450 } ] },
+        { "id": "bbp-3", "name": "Malai Boti Pizza", "desc": "Creamy malai boti flavor layered with cheese.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Malai+Boti", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 600 }, { "size": "Medium 9\"", "price": 1199 }, { "size": "Large 12\"", "price": 1750 }, { "size": "X-Large 12\"", "price": 2450 } ] },
+        { "id": "bbp-4", "name": "Kabab Crust Pizza", "desc": "Flavorful pizza with juicy kabab-filled crust.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Kabab+Crust", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 600 }, { "size": "Medium 9\"", "price": 1199 }, { "size": "Large 12\"", "price": 1750 }, { "size": "X-Large 12\"", "price": 2450 } ] },
+        { "id": "bbp-5", "name": "Crown Crust Pizza", "desc": "Royal treat with stuffed crown crust.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Crown+Crust", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 600 }, { "size": "Medium 9\"", "price": 1199 }, { "size": "Large 12\"", "price": 1750 }, { "size": "X-Large 12\"", "price": 2450 } ] },
+        { "id": "bbp-6", "name": "Crispy Twist Pizza", "desc": "Crispy cheesy pizza with fun twists in every bite.", "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Crispy+Twist", "hasVariants": true, "variants": [ { "size": "Small 6\"", "price": 600 }, { "size": "Medium 9\"", "price": 1199 }, { "size": "Large 12\"", "price": 1750 }, { "size": "X-Large 12\"", "price": 2450 } ] }
       ]
     },
     {
@@ -329,34 +41,10 @@
       "name": "Burgers",
       "icon": "🍔",
       "products": [
-        {
-          "id": "brg-1",
-          "name": "Patty Burger",
-          "desc": "Tender chicken patty with lettuce and mayo.",
-          "price": 320,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Patty+Burger"
-        },
-        {
-          "id": "brg-2",
-          "name": "Zingster Burger",
-          "desc": "Golden crispy chicken fillet & signature sauce.",
-          "price": 440,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Zingster"
-        },
-        {
-          "id": "brg-3",
-          "name": "Mighty Zingster",
-          "desc": "Two crunchy zinger fillets with cheese.",
-          "price": 680,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Mighty+Zing"
-        },
-        {
-          "id": "brg-4",
-          "name": "Grill Burger",
-          "desc": "Smoky grilled patty and fresh vegetables.",
-          "price": 650,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Grill+Burger"
-        }
+        { "id": "brg-1", "name": "Patty Burger", "desc": "Tender chicken patty with lettuce and mayo.", "price": 320, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Patty+Burger" },
+        { "id": "brg-2", "name": "Zingster Burger", "desc": "Golden crispy chicken fillet & signature sauce.", "price": 440, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Zingster" },
+        { "id": "brg-3", "name": "Mighty Zingster", "desc": "Two crunchy zinger fillets with cheese.", "price": 680, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Mighty+Zing" },
+        { "id": "brg-4", "name": "Grill Burger", "desc": "Smoky grilled patty and fresh vegetables.", "price": 650, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Grill+Burger" }
       ]
     },
     {
@@ -364,27 +52,9 @@
       "name": "Appetizers",
       "icon": "🍟",
       "products": [
-        {
-          "id": "app-1",
-          "name": "French Fries",
-          "desc": "Classic salted crispy fries.",
-          "price": 300,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Fries"
-        },
-        {
-          "id": "app-2",
-          "name": "Loaded Fries",
-          "desc": "Fries topped with cheese and sauces.",
-          "price": 770,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Loaded+Fries"
-        },
-        {
-          "id": "app-3",
-          "name": "Chicken Cheese Stick",
-          "desc": "Gooey cheese and chicken filling.",
-          "price": 820,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Cheese+Stick"
-        }
+        { "id": "app-1", "name": "French Fries", "desc": "Classic salted crispy fries.", "price": 300, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Fries" },
+        { "id": "app-2", "name": "Loaded Fries", "desc": "Fries topped with cheese and sauces.", "price": 770, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Loaded+Fries" },
+        { "id": "app-3", "name": "Chicken Cheese Stick", "desc": "Gooey cheese and chicken filling.", "price": 820, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Cheese+Stick" }
       ]
     },
     {
@@ -392,18 +62,8 @@
       "name": "Beverages",
       "icon": "🥤",
       "products": [
-        {
-          "id": "bev-1",
-          "name": "Mint Margarita",
-          "price": 250,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Mint"
-        },
-        {
-          "id": "bev-2",
-          "name": "1.5 Liter Drink",
-          "price": 230,
-          "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=1.5L+Cold+Drink"
-        }
+        { "id": "bev-1", "name": "Mint Margarita", "price": 250, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=Mint" },
+        { "id": "bev-2", "name": "1.5 Liter Drink", "price": 230, "image": "https://placehold.co/400x300/C0392B/FFF8F0?text=1.5L+Cold+Drink" }
       ]
     }
   ]
