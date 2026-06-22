@@ -68,8 +68,8 @@ function renderProductCard(p) {
     let priceHTML = "";
     let variantsHTML = "";
 
-    if (p.hasVariants) {
-        // We set ID for the price display specifically
+    if (p.hasVariants && p.variants) {
+        // Initial price shows the first variant price
         priceHTML = `<span id="price-p-${p.id}">Rs. ${p.variants[0].price}</span>`;
         variantsHTML = `<div class="variants" id="v-cont-${p.id}">` +
             p.variants.map((v, i) => `
@@ -81,7 +81,7 @@ function renderProductCard(p) {
                 </button>
             `).join('') + `</div>`;
     } else {
-        priceHTML = `Rs. ${p.price}`;
+        priceHTML = `<span>Rs. ${p.price}</span>`;
     }
 
     return `
@@ -91,62 +91,74 @@ function renderProductCard(p) {
                 <h3 class="card-title">${p.name}</h3>
                 <p class="card-desc">${p.desc || ''}</p>
                 ${variantsHTML}
-                <div class="card-price" id="final-p-${p.id}">${priceHTML}</div>
+                <div class="card-price" id="final-container-${p.id}">${priceHTML}</div>
                 <button class="btn btn-primary" onclick="addToCart('${p.id}')">+ Add to Cart</button>
             </div>
         </div>
     `;
 }
 
-// Fixed variant selection logic
-function setVariant(pid, btnElement) {
+/**
+ * Switcher function for Sizes
+ */
+function setVariant(pid, clickedBtn) {
+    // 1. Target specifically the buttons inside this pizza's container
     const container = document.getElementById(`v-cont-${pid}`);
+    const allButtons = container.querySelectorAll('.v-btn');
     
-    // 1. Visually un-select other buttons
-    container.querySelectorAll('.v-btn').forEach(btn => btn.classList.remove('selected'));
+    // 2. Remove 'selected' style from all other sizes
+    allButtons.forEach(btn => btn.classList.remove('selected'));
     
-    // 2. Select the current button
-    btnElement.classList.add('selected');
+    // 3. Highlight only the clicked one
+    clickedBtn.classList.add('selected');
     
-    // 3. Get values from the clicked button's Data Attributes
-    const newPrice = btnElement.getAttribute('data-price');
-    
-    // 4. Update the Price Display in the card
-    document.getElementById(`price-p-${pid}`).innerText = `Rs. ${newPrice}`;
+    // 4. Update the visual price on the card
+    const priceValue = clickedBtn.getAttribute('data-price');
+    const priceLabel = document.getElementById(`price-p-${pid}`);
+    if (priceLabel) {
+        priceLabel.innerText = `Rs. ${priceValue}`;
+    }
 }
 
-// Fixed Add To Cart Logic
+/**
+ * Final Add to Cart logic
+ */
 function addToCart(pid) {
-    // 1. Find the basic product data
-    let productData = null;
-    menuData.categories.forEach(c => {
-        const found = c.products.find(x => x.id === pid);
-        if (found) productData = found;
+    // Locate the raw product from our JSON data
+    let foundProduct = null;
+    menuData.categories.forEach(cat => {
+        const match = cat.products.find(p => p.id === pid);
+        if (match) foundProduct = match;
     });
 
-    let selectedSize = null;
-    let selectedPrice = productData.price;
+    if (!foundProduct) return;
 
-    // 2. If it has sizes, find WHICH button has the 'selected' class
-    if (productData.hasVariants) {
-        const selectedBtn = document.querySelector(`#v-cont-${pid} .v-btn.selected`);
-        selectedSize = selectedBtn.getAttribute('data-size');
-        selectedPrice = parseInt(selectedBtn.getAttribute('data-price'));
+    let cartSize = null;
+    let cartPrice = foundProduct.price;
+
+    // Check if we need to grab size info
+    if (foundProduct.hasVariants) {
+        const activeSizeBtn = document.querySelector(`#v-cont-${pid} .v-btn.selected`);
+        if (activeSizeBtn) {
+            cartSize = activeSizeBtn.getAttribute('data-size');
+            cartPrice = parseInt(activeSizeBtn.getAttribute('data-price'));
+        }
     }
 
-    // 3. Create unique cart ID based on Size + Product ID
-    const cartId = selectedSize ? `${pid}-${selectedSize}` : pid;
+    // Create unique key for cart so "Medium" and "Small" don't mix
+    const cartUniqueId = cartSize ? `${pid}-${cartSize}` : pid;
     
-    // 4. Add to cart logic
-    const exists = cart.find(item => item.cartId === cartId);
-    if (exists) {
-        exists.qty++;
+    const existingIndex = cart.findIndex(item => item.cartId === cartUniqueId);
+
+    if (existingIndex > -1) {
+        cart[existingIndex].qty += 1;
     } else {
         cart.push({
-            cartId: cartId,
-            name: productData.name,
-            size: selectedSize,
-            price: selectedPrice,
+            cartId: cartUniqueId,
+            id: pid,
+            name: foundProduct.name,
+            size: cartSize,
+            price: cartPrice,
             qty: 1
         });
     }
@@ -158,35 +170,36 @@ function addToCart(pid) {
 
 function updateCartUI() {
     const list = document.getElementById('cart-items-list');
-    document.getElementById('cart-count').innerText = cart.reduce((s, i) => s + i.qty, 0);
+    const totalCount = cart.reduce((acc, i) => acc + i.qty, 0);
+    document.getElementById('cart-count').innerText = totalCount;
     
-    if(cart.length === 0) {
-        list.innerHTML = `<p style="text-align:center; padding:30px; color:#888;">Your cart is empty.</p>`;
+    if (cart.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:30px; color:#888;">Cart is currently empty.</div>`;
         document.getElementById('cart-total-amount').innerText = `Rs. 0`;
         return;
     }
 
-    list.innerHTML = cart.map((item, idx) => `
-        <div class="cart-item-row">
+    list.innerHTML = cart.map((item, index) => `
+        <div class="cart-item-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #f0f0f0; padding-bottom:10px;">
             <div>
-                <strong>${item.name}</strong><br>
-                <small>${item.size || ''}</small>
-                <div>Rs. ${item.price * item.qty}</div>
+                <div style="font-weight:700;">${item.name}</div>
+                <div style="font-size:0.8rem; color:#E21B1B;">${item.size || ''}</div>
+                <div style="font-weight:700;">Rs. ${(item.price * item.qty).toLocaleString()}</div>
             </div>
-            <div class="qty-ctrl">
-                <button onclick="changeQty(${idx}, -1)">-</button>
-                <span style="font-weight:600; min-width:15px; text-align:center">${item.qty}</span>
-                <button onclick="changeQty(${idx}, 1)">+</button>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button onclick="changeQty(${index}, -1)" style="border:1px solid #ddd; background:white; width:28px; height:28px; border-radius:5px;">-</button>
+                <span style="min-width:15px; text-align:center; font-weight:700;">${item.qty}</span>
+                <button onclick="changeQty(${index}, 1)" style="border:1px solid #ddd; background:white; width:28px; height:28px; border-radius:5px;">+</button>
             </div>
         </div>
     `).join('');
 
-    const total = cart.reduce((s, i) => s + (itemPriceTotal = i.price * i.qty), 0);
-    document.getElementById('cart-total-amount').innerText = `Rs. ${cart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString()}`;
+    const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+    document.getElementById('cart-total-amount').innerText = `Rs. ${subtotal.toLocaleString()}`;
 }
 
-function changeQty(idx, diff) {
-    cart[idx].qty += diff;
+function changeQty(idx, val) {
+    cart[idx].qty += val;
     if (cart[idx].qty <= 0) cart.splice(idx, 1);
     updateCartUI();
     saveCart();
@@ -198,41 +211,51 @@ function toggleCart() {
 }
 
 function animateFlame() {
-    const f = document.getElementById('flame');
-    f.classList.add('active');
-    setTimeout(() => f.classList.remove('active'), 1000);
+    const flame = document.getElementById('flame');
+    flame.classList.add('active');
+    setTimeout(() => flame.classList.remove('active'), 800);
 }
 
-function saveCart() { localStorage.setItem('yum_cart', JSON.stringify(cart)); }
-function openCheckout() { 
-    if(cart.length === 0) return alert("Cart is empty!");
-    document.getElementById('checkout-modal').classList.add('open'); 
+function saveCart() { 
+    localStorage.setItem('yum_cart', JSON.stringify(cart)); 
 }
-function closeModal() { document.getElementById('checkout-modal').classList.remove('open'); }
-function toggleAddress(v) { document.getElementById('address-field').style.display = v ? 'block' : 'none'; }
+
+function openCheckout() {
+    if(cart.length === 0) return;
+    document.getElementById('checkout-modal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('checkout-modal').classList.remove('open');
+}
+
+function toggleAddress(isVisible) {
+    document.getElementById('address-field').style.display = isVisible ? 'block' : 'none';
+}
 
 function sendToWhatsApp() {
-    const name = document.getElementById('order-name').value;
+    const custName = document.getElementById('order-name').value;
     const type = document.querySelector('input[name="otype"]:checked').value;
-    const addr = document.getElementById('order-address').value;
+    const address = document.getElementById('order-address').value;
     
-    if(!name) return alert("Please enter your name");
-    if(type === 'Delivery' && !addr) return alert("Please enter delivery address");
+    if(!custName) return alert("Please enter your name");
+    if(type === 'Delivery' && !address) return alert("Address is required for delivery");
 
-    let text = `*New Order from Yumilicious Website* 🍕\n--------------------------------\n👤 *Customer:* ${name}\n📦 *Order Type:* ${type}\n`;
-    if(type === 'Delivery') text += `🏠 *Address:* ${addr}\n`;
-    text += `--------------------------------\n🛒 *Items Details:*\n`;
+    let text = `*New Order: Yumilicious Fast Food*\n------------------------------\n👤 *Customer:* ${custName}\n📦 *Order Type:* ${type}\n`;
+    if(type === 'Delivery') text += `🏠 *Address:* ${address}\n`;
+    text += `------------------------------\n🛒 *Items:*\n`;
     
     cart.forEach(i => {
-        text += `• ${i.qty}x ${i.name} ${i.size ? '['+i.size+']' : ''} - Rs. ${(i.price * i.qty).toLocaleString()}\n`;
+        text += `• ${i.qty}x ${i.name} [${i.size || ''}] - Rs.${(i.price * i.qty).toLocaleString()}\n`;
     });
     
-    const totalAmount = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    text += `--------------------------------\n💰 *Total Amount: Rs. ${totalAmount.toLocaleString()}*`;
+    const finalBill = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+    text += `------------------------------\n💰 *Total: Rs. ${finalBill.toLocaleString()}*`;
 
-    const waLink = `https://wa.me/${menuData.restaurant.whatsapp}?text=${encodeURIComponent(text)}`;
-    window.open(waLink, '_blank');
+    const link = `https://wa.me/${menuData.restaurant.whatsapp}?text=${encodeURIComponent(text)}`;
+    window.open(link, '_blank');
     
+    // Clear and reset
     cart = [];
     saveCart();
     updateCartUI();
