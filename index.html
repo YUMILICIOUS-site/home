@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yumilicious Fast Food & Pizza | Gujranwala</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img id="rest-logo" src="" alt="Logo">
+                <span id="rest-name">Yumilicious</span>
+            </div>
+            <button class="cart-btn" onclick="toggleCart()">
+                🛒 <span id="cart-count">0</span>
+                <span class="flame-counter" id="flame">🔥</span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero" id="hero-bg">
+        <div class="hero-content">
+            <h1 id="hero-title">Yumilicious</h1>
+            <p id="hero-tagline">Taste the Yum. Feel the Vibe.</p>
+            <div class="hero-badges">
+                <span>🕒 24 Hours</span>
+                <span>📍 Gujranwala</span>
+            </div>
+            <a href="#menu-start" class="btn btn-primary">Order Now</a>
+        </div>
+    </section>
+
+    <nav class="category-nav" id="cat-nav"></nav>
+
+    <main class="container" id="menu-start">
+        <div id="menu-container"></div>
+    </main>
+
+    <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+    <aside class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Order</h2>
+            <button onclick="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items-list"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cart-total-amount">Rs.0</span>
+            </div>
+            <p class="delivery-msg">Delivery charges will be added on call.</p>
+            <button class="btn btn-whatsapp" onclick="openCheckout()">Checkout via WhatsApp 📱</button>
+        </div>
+    </aside>
+
+    <div class="modal" id="checkout-modal">
+        <div class="modal-content">
+            <h3>Complete Your Order</h3>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="order-name" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label>Order Type</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="otype" value="Delivery" checked onchange="toggleAddress(true)"> Delivery</label>
+                    <label><input type="radio" name="otype" value="Pickup" onchange="toggleAddress(false)"> Pickup</label>
+                </div>
+            </div>
+            <div class="form-group" id="address-field">
+                <label>Delivery Address</label>
+                <textarea id="order-address" placeholder="House #, Street #, Area"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Special Instructions</label>
+                <input type="text" id="order-notes" placeholder="e.g. Extra spicy, no onions">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="sendToWhatsApp()">Confirm & Send Order</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Yumilicious Fast Food & Pizza. All Rights Reserved.</p>
+        <p id="footer-addr"></p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
