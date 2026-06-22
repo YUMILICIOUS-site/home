@@ -1,4 +1,4 @@
-const ADMIN_PASSWORD = "yumilicious2024"; // <-- CHANGE THIS MANUALLY OR VIA SECURITY TAB
+const ADMIN_PASSWORD = "admin123"; // <-- CHANGE THIS MANUALLY OR VIA SECURITY TAB
 
 let localData = null;
 
