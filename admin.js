@@ -1,140 +1,114 @@
-/**
- * ADMIN LOGIC FOR YUMILICIOUS
- * Password: yumilicious2024
- */
+const ADMIN_PASSWORD = "yumilicious2024"; // <-- CHANGE THIS MANUALLY OR VIA SECURITY TAB
 
-// We will use a plain string for maximum compatibility
-const ADMIN_PASSWORD = "yumilicious2024"; 
 let localData = null;
 
-/**
- * Login Handler
- */
 function login() {
     const input = document.getElementById('pass-input').value;
-    
-    // Simple, reliable check that works on all browsers and local files
     if (input === ADMIN_PASSWORD) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
-        loadAdminData();
+        loadData();
     } else {
-        alert("Incorrect password. Please try again.");
+        alert("Incorrect Password!");
     }
 }
 
-/**
- * Fetch products.json and populate forms
- */
-async function loadAdminData() {
+async function loadData() {
     try {
-        // This may still fail if opening as a local file due to browser security
-        // It works perfectly once uploaded to GitHub.
         const res = await fetch('./products.json');
-        if (!res.ok) throw new Error("Could not find products.json");
-        
         localData = await res.json();
         
-        // Fill Restaurant Info
-        document.getElementById('admin-rest-name').value = localData.restaurant.name;
-        document.getElementById('admin-rest-wa').value = localData.restaurant.whatsapp;
-        document.getElementById('admin-banner-url').value = localData.restaurant.bannerImage;
+        // Fill Info Tab
+        document.getElementById('inf-name').value = localData.restaurant.name;
+        document.getElementById('inf-wa').value = localData.restaurant.whatsapp;
+        document.getElementById('inf-banner').value = localData.restaurant.bannerImage;
         
-        renderPriceTable();
-    } catch (err) {
-        console.error(err);
-        document.getElementById('price-table-container').innerHTML = 
-            `<div style="color:red; padding:20px; border:1px solid red; background:#fff0f0;">
-                <p><strong>⚠️ Browser Security Block</strong></p>
-                <p>Browsers block loading data files directly from your computer for security.</p>
-                <p><strong>To see your data:</strong> Please upload your files to GitHub Pages. It will work perfectly there!</p>
-            </div>`;
+        renderMenuTable();
+    } catch (e) {
+        alert("Error loading products.json. Make sure you are using a local server or GitHub Pages.");
     }
 }
 
-/**
- * Update Restaurant object in memory
- */
-function updateRestInfo() {
-    if(!localData) return;
-    localData.restaurant.name = document.getElementById('admin-rest-name').value;
-    localData.restaurant.whatsapp = document.getElementById('admin-rest-wa').value;
-    localData.restaurant.bannerImage = document.getElementById('admin-banner-url').value;
+function showTab(tabId, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    el.classList.add('active');
 }
 
-/**
- * Build the Editable Price Table
- */
-function renderPriceTable() {
+function renderMenuTable() {
     let html = `<table>
         <thead>
             <tr>
-                <th>Category</th>
+                <th>Preview</th>
                 <th>Product Name</th>
-                <th>Size/Variant</th>
+                <th>Variant/Size</th>
                 <th>Price (Rs)</th>
+                <th>Image URL / Path</th>
             </tr>
         </thead>
         <tbody>`;
 
-    localData.categories.forEach((cat, catIdx) => {
+    localData.categories.forEach((cat, cIdx) => {
         cat.products.forEach((p, pIdx) => {
+            // Handle variants (Pizzas)
             if (p.hasVariants) {
                 p.variants.forEach((v, vIdx) => {
                     html += `<tr>
-                        <td style="font-size:0.8rem; color:#888">${cat.name}</td>
-                        <td>${p.name}</td>
+                        <td><img src="${p.image}" class="img-preview"></td>
+                        <td><strong>${p.name}</strong></td>
                         <td>${v.size}</td>
-                        <td><input type="number" value="${v.price}" onchange="updatePrice(${catIdx}, ${pIdx}, ${vIdx}, this.value)"></td>
+                        <td><input type="number" value="${v.price}" onchange="updateVal(${cIdx}, ${pIdx}, 'price', this.value, ${vIdx})"></td>
+                        <td><input type="text" value="${p.image}" onchange="updateVal(${cIdx}, ${pIdx}, 'image', this.value)"></td>
                     </tr>`;
                 });
             } else {
+                // Handle single items (Burgers/Fries)
                 html += `<tr>
-                    <td style="font-size:0.8rem; color:#888">${cat.name}</td>
-                    <td>${p.name}</td>
+                    <td><img src="${p.image}" class="img-preview"></td>
+                    <td><strong>${p.name}</strong></td>
                     <td>Standard</td>
-                    <td><input type="number" value="${p.price}" onchange="updatePrice(${catIdx}, ${pIdx}, null, this.value)"></td>
+                    <td><input type="number" value="${p.price}" onchange="updateVal(${cIdx}, ${pIdx}, 'price', this.value)"></td>
+                    <td><input type="text" value="${p.image}" onchange="updateVal(${cIdx}, ${pIdx}, 'image', this.value)"></td>
                 </tr>`;
             }
         });
     });
-
     html += `</tbody></table>`;
-    document.getElementById('price-table-container').innerHTML = html;
+    document.getElementById('menu-table-container').innerHTML = html;
 }
 
-/**
- * Update data in localData variable when user types in table
- */
-function updatePrice(catIdx, pIdx, vIdx, newVal) {
-    const price = parseInt(newVal);
-    if (vIdx !== null) {
-        localData.categories[catIdx].products[pIdx].variants[vIdx].price = price;
-    } else {
-        localData.categories[catIdx].products[pIdx].price = price;
+function updateVal(cIdx, pIdx, key, val, vIdx = null) {
+    const product = localData.categories[cIdx].products[pIdx];
+    
+    if (key === 'price') {
+        if (vIdx !== null) product.variants[vIdx].price = parseInt(val);
+        else product.price = parseInt(val);
+    } else if (key === 'image') {
+        product.image = val;
+        renderMenuTable(); // Refresh previews
     }
 }
 
-/**
- * Generate and download the updated JSON file
- */
-function downloadJSON() {
-    if(!localData) return alert("No data loaded to save.");
-    
-    const dataStr = JSON.stringify(localData, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = "products.json";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    alert("File downloaded! Now upload this products.json to your GitHub repository to make the changes live.");
+function syncInfo() {
+    localData.restaurant.name = document.getElementById('inf-name').value;
+    localData.restaurant.whatsapp = document.getElementById('inf-wa').value;
+    localData.restaurant.bannerImage = document.getElementById('inf-banner').value;
 }
 
-function logout() {
-    window.location.reload();
+function genPassCode() {
+    const newPass = document.getElementById('new-pass-input').value;
+    document.getElementById('pass-code-output').textContent = `const ADMIN_PASSWORD = "${newPass}";`;
 }
+
+function downloadJSON() {
+    const blob = new Blob([JSON.stringify(localData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "products.json";
+    a.click();
+    alert("Success! Now upload the downloaded 'products.json' to GitHub to save your changes.");
+}
+
+function logout() { window.location.reload(); }

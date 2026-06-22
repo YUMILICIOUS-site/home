@@ -3,87 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | Yumilicious</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Yumilicious Admin | Advanced</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #C0392B; --dark: #1A1A1A; }
-        body { font-family: 'Poppins', sans-serif; background: #f4f4f4; margin: 0; color: #333; }
+        :root { --primary: #C0392B; --dark: #1A1A1A; --bg: #f8f9fa; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; color: #333; }
         
+        /* Login */
         .login-screen { display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--primary); position: fixed; width: 100%; top: 0; left: 0; z-index: 9999; }
-        .login-box { background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 400px; }
-        .login-box h2 { margin-top: 0; color: var(--primary); }
+        .login-box { background: white; padding: 40px; border-radius: 12px; text-align: center; width: 90%; max-width: 400px; }
         
-        input { padding: 12px; width: 100%; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; }
-        button:hover { background: #a02e23; }
+        /* Layout */
+        #admin-content { display: none; }
+        .sidebar { width: 250px; background: var(--dark); color: white; height: 100vh; position: fixed; padding: 20px; }
+        .main-panel { margin-left: 250px; padding: 30px; }
         
-        #admin-content { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
-        .nav-bar { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px; margin-bottom: 30px; }
+        .nav-item { padding: 12px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); }
+
+        .section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: none; }
+        .section.active { display: block; }
+
+        input, textarea { padding: 10px; width: 100%; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
         
-        .section { background: white; padding: 25px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        h3 { margin-top: 0; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; }
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        th { background: #f4f4f4; position: sticky; top: 0; }
+        .img-preview { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; background: #eee; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
-        th { background: #f9f9f9; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+        .btn-save { background: #27ae60; position: fixed; bottom: 30px; right: 30px; padding: 15px 30px; font-size: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
-        .save-bar { position: fixed; bottom: 20px; right: 20px; width: auto; }
-        .btn-success { background: #27ae60; width: auto; padding: 15px 30px; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4); }
-        
-        .hint { font-size: 0.85rem; color: #666; margin-top: 10px; font-style: italic; }
+        .code-box { background: #2d3436; color: #fab1a0; padding: 15px; border-radius: 6px; font-family: monospace; overflow-x: auto; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-    <!-- Login Overlay -->
     <div class="login-screen" id="login-screen">
         <div class="login-box">
             <h2>Yumilicious Admin</h2>
-            <p>Please enter password to continue</p>
-            <input type="password" id="pass-input" placeholder="Password" onkeypress="if(event.key==='Enter') login()">
-            <button onclick="login()">Unlock Dashboard</button>
-            <p class="hint">Default: yumilicious2024</p>
+            <input type="password" id="pass-input" placeholder="Password">
+            <button class="btn" style="width:100%" onclick="login()">Unlock Dashboard</button>
         </div>
     </div>
 
-    <!-- Main Admin Dashboard -->
     <div id="admin-content">
-        <div class="nav-bar">
-            <strong>🔥 Yumilicious Dashboard</strong>
-            <button onclick="logout()" style="width:auto; background:transparent; border:1px solid white; padding: 5px 15px;">Logout</button>
+        <div class="sidebar">
+            <h3>Yumilicious</h3>
+            <div class="nav-item active" onclick="showTab('tab-menu', this)">🍔 Menu Editor</div>
+            <div class="nav-item" onclick="showTab('tab-info', this)">ℹ️ Restaurant Info</div>
+            <div class="nav-item" onclick="showTab('tab-security', this)">🔒 Security Settings</div>
+            <div class="nav-item" onclick="logout()" style="margin-top:50px; opacity:0.6">Logout</div>
         </div>
 
-        <div class="section">
-            <h3>Banner & Restaurant Info</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div>
-                    <label>Restaurant Name</label>
-                    <input type="text" id="admin-rest-name" onchange="updateRestInfo()">
-                </div>
-                <div>
-                    <label>WhatsApp Number (With Country Code)</label>
-                    <input type="text" id="admin-rest-wa" onchange="updateRestInfo()">
-                </div>
+        <div class="main-panel">
+            <!-- TAB: MENU EDITOR -->
+            <div id="tab-menu" class="section active">
+                <h3>Menu & Image Management</h3>
+                <p>Update prices and image links below. Tip: Upload images to your GitHub <code>images/products/</code> folder first.</p>
+                <div id="menu-table-container"></div>
             </div>
-            <label>Hero Banner Image URL</label>
-            <input type="text" id="admin-banner-url" onchange="updateRestInfo()">
-        </div>
 
-        <div class="section">
-            <h3>Menu Price Editor</h3>
-            <p style="font-size: 0.9rem; color: #666;">All changes are saved to the file you download below.</p>
-            <div id="price-table-container">
-                <!-- Table loaded via JS -->
-                 <p>Loading menu data...</p>
+            <!-- TAB: RESTAURANT INFO -->
+            <div id="tab-info" class="section">
+                <h3>Restaurant Information</h3>
+                <label>Restaurant Name</label>
+                <input type="text" id="inf-name" onchange="syncInfo()">
+                <label>WhatsApp (923...)</label>
+                <input type="text" id="inf-wa" onchange="syncInfo()">
+                <label>Banner URL</label>
+                <input type="text" id="inf-banner" onchange="syncInfo()">
             </div>
-        </div>
 
-        <div class="section" style="background: #eef2f7; border: 1px solid #d1d9e6;">
-            <h3>Step 2: Save Your Changes</h3>
-            <p>1. After editing prices, click the green button below.</p>
-            <p>2. It will download a file named <strong>products.json</strong>.</p>
-            <p>3. Upload that file to your GitHub repository (replace the old one).</p>
-            <button class="btn btn-success" onclick="downloadJSON()">Step 2: Download products.json</button>
+            <!-- TAB: SECURITY -->
+            <div id="tab-security" class="section">
+                <h3>Change Admin Password</h3>
+                <p>Since this is a static site, you must update the password in the <code>admin.js</code> file.</p>
+                
+                <label>Enter New Password</label>
+                <input type="text" id="new-pass-input" placeholder="e.g. MyNewPassword2024" oninput="genPassCode()">
+                
+                <p><strong>Instructions:</strong></p>
+                <ol>
+                    <li>Type your new password above.</li>
+                    <li>Copy the code line below:</li>
+                </ol>
+                <div class="code-box" id="pass-code-output">const ADMIN_PASSWORD = "yumilicious2024";</div>
+                <ol start="3">
+                    <li>Open your <code>admin.js</code> file in GitHub.</li>
+                    <li>Replace the first line with this new code and click <strong>Commit changes</strong>.</li>
+                </ol>
+            </div>
+
+            <button class="btn btn-save" onclick="downloadJSON()">💾 Save All & Download products.json</button>
         </div>
     </div>
 

@@ -47,7 +47,7 @@ function renderAllProducts() {
     const container = document.getElementById('menu-container');
     container.innerHTML = menuData.categories.map(cat => `
         <section id="${cat.id}" style="padding-top: 80px">
-            <h2 style="font-family:'Playfair Display'; font-size: 2rem; border-left: 5px solid var(--primary); padding-left: 15px">
+            <h2 style="font-family:'Playfair Display'; font-size: 2rem; border-left: 5px solid var(--primary); padding-left: 15px; margin-bottom:20px;">
                 ${cat.icon} ${cat.name}
             </h2>
             <div class="grid">
@@ -62,115 +62,142 @@ function renderProductCard(p) {
     let variantsHTML = '';
 
     if (p.hasVariants) {
-        priceHTML = `<span id="price-${p.id}">Rs. ${p.variants[0].price}</span>`;
+        // Default to first variant
+        priceHTML = `<span id="price-display-${p.id}">Rs. ${p.variants[0].price.toLocaleString()}</span>`;
         variantsHTML = `
-            <div class="variants">
+            <div class="variants" id="variants-${p.id}">
                 ${p.variants.map((v, i) => `
                     <button class="v-btn ${i === 0 ? 'selected' : ''}" 
-                        onclick="selectVariant('${p.id}', '${v.size}', ${v.price}, this)">
+                        data-price="${v.price}" 
+                        data-size="${v.size}"
+                        onclick="selectVariant('${p.id}', this)">
                         ${v.size}
                     </button>
                 `).join('')}
             </div>
         `;
     } else {
-        priceHTML = `Rs. ${p.price}`;
+        priceHTML = `Rs. ${p.price.toLocaleString()}`;
     }
 
     return `
-        <div class="card">
+        <div class="card" id="card-${p.id}">
             <img src="${p.image}" alt="${p.name}" loading="lazy">
             <div class="card-body">
                 <h3 class="card-title">${p.name}</h3>
                 <p class="card-desc">${p.desc || ''}</p>
                 ${variantsHTML}
-                <div class="card-price">${priceHTML}</div>
+                <div class="card-price" id="container-price-${p.id}">${priceHTML}</div>
                 <button class="btn btn-primary" onclick="addToCart('${p.id}')">Add to Cart</button>
             </div>
         </div>
     `;
 }
 
-function selectVariant(pid, size, price, el) {
-    const parent = el.parentElement;
-    parent.querySelectorAll('.v-btn').forEach(b => b.classList.remove('selected'));
+// Logic to change the size and update the displayed price
+function selectVariant(pid, el) {
+    const variantContainer = document.getElementById(`variants-${pid}`);
+    // Remove selected class from all buttons in this specific card
+    variantContainer.querySelectorAll('.v-btn').forEach(btn => btn.classList.remove('selected'));
+    // Add to clicked one
     el.classList.add('selected');
-    document.getElementById(`price-${pid}`).textContent = `Rs. ${price}`;
+    
+    // Update the price text
+    const newPrice = parseInt(el.getAttribute('data-price'));
+    document.getElementById(`price-display-${pid}`).textContent = `Rs. ${newPrice.toLocaleString()}`;
 }
 
 function addToCart(pid) {
-    let product;
-    menuData.categories.forEach(c => {
-        const found = c.products.find(p => p.id === pid);
+    // 1. Find product data
+    let product = null;
+    menuData.categories.forEach(cat => {
+        const found = cat.products.find(p => p.id === pid);
         if (found) product = found;
     });
 
-    let selectedSize = null;
-    let selectedPrice = product.price;
+    if (!product) return;
 
-    const card = document.getElementById(`price-${pid}`)?.closest('.card');
-    if (card && product.hasVariants) {
-        const selBtn = card.querySelector('.v-btn.selected');
-        selectedSize = selBtn.textContent.trim();
-        selectedPrice = product.variants.find(v => v.size === selectedSize).price;
+    let finalSize = null;
+    let finalPrice = product.price;
+
+    // 2. If it has sizes, find the one with the 'selected' class
+    if (product.hasVariants) {
+        const selectedBtn = document.querySelector(`#variants-${pid} .v-btn.selected`);
+        finalSize = selectedBtn.getAttribute('data-size');
+        finalPrice = parseInt(selectedBtn.getAttribute('data-price'));
     }
 
-    const cartId = selectedSize ? `${pid}-${selectedSize}` : pid;
-    const existing = cart.find(item => item.cartId === cartId);
+    // 3. Create a unique ID for the cart (so Small and Large pizza are separate lines)
+    const cartId = finalSize ? `${pid}-${finalSize}` : pid;
 
-    if (existing) {
-        existing.qty++;
+    // 4. Add to cart array
+    const existingIndex = cart.findIndex(item => item.cartId === cartId);
+    if (existingIndex > -1) {
+        cart[existingIndex].qty += 1;
     } else {
         cart.push({
-            cartId,
+            cartId: cartId,
             id: pid,
             name: product.name,
-            size: selectedSize,
-            price: selectedPrice,
-            qty: 1
+            size: finalSize,
+            price: finalPrice,
+            qty: 1,
+            image: product.image
         });
     }
 
+    // 5. Update UI
     animateFlame();
     updateCartUI();
     saveCart();
+    
+    // Optional: open cart automatically on mobile when item added
+    if(window.innerWidth < 500) {
+        toggleCart();
+    }
 }
 
 function updateCartUI() {
     const list = document.getElementById('cart-items-list');
-    const count = document.getElementById('cart-count');
+    const countBadge = document.getElementById('cart-count');
     const totalEl = document.getElementById('cart-total-amount');
 
-    count.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+    const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+    countBadge.textContent = totalQty;
     
     if (cart.length === 0) {
-        list.innerHTML = `<p style="text-align:center; padding: 20px;">Your cart is empty</p>`;
+        list.innerHTML = `<div style="text-align:center; padding: 40px; color: #888;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🛒</div>
+            <p>Your cart is empty.</p>
+        </div>`;
         totalEl.textContent = `Rs. 0`;
         return;
     }
 
     list.innerHTML = cart.map((item, idx) => `
         <div class="cart-item-row">
-            <div>
-                <strong>${item.name}</strong><br>
-                <small>${item.size || ''}</small>
+            <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 0.95rem;">${item.name}</div>
+                ${item.size ? `<div style="font-size: 0.8rem; color: var(--primary); font-weight:500;">Size: ${item.size}</div>` : ''}
+                <div style="font-weight: 700; margin-top: 4px;">Rs. ${(item.price * item.qty).toLocaleString()}</div>
             </div>
             <div class="qty-ctrl">
                 <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
-                <span>${item.qty}</span>
+                <span style="font-weight:600; width: 20px; text-align:center;">${item.qty}</span>
                 <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
             </div>
-            <div>Rs. ${item.price * item.qty}</div>
         </div>
     `).join('');
 
-    const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-    totalEl.textContent = `Rs. ${total.toLocaleString()}`;
+    const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    totalEl.textContent = `Rs. ${grandTotal.toLocaleString()}`;
 }
 
 function updateQty(idx, delta) {
     cart[idx].qty += delta;
-    if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    if (cart[idx].qty <= 0) {
+        cart.splice(idx, 1);
+    }
     updateCartUI();
     saveCart();
 }
@@ -183,7 +210,10 @@ function toggleCart() {
 function animateFlame() {
     const f = document.getElementById('flame');
     f.style.display = 'block';
-    setTimeout(() => f.style.display = 'none', 2000);
+    f.classList.remove('animate');
+    void f.offsetWidth; // trigger reflow
+    f.classList.add('animate');
+    setTimeout(() => { f.style.display = 'none'; }, 1500);
 }
 
 function saveCart() {
@@ -191,7 +221,7 @@ function saveCart() {
 }
 
 function openCheckout() {
-    if (cart.length === 0) return alert("Cart is empty!");
+    if (cart.length === 0) return alert("Add items to your cart first!");
     document.getElementById('checkout-modal').classList.add('open');
 }
 
@@ -209,20 +239,29 @@ function sendToWhatsApp() {
     const addr = document.getElementById('order-address').value;
     const notes = document.getElementById('order-notes').value;
 
-    if (!name || (type === 'Delivery' && !addr)) {
-        alert("Please fill in required fields");
-        return;
-    }
+    if (!name) return alert("Please enter your name");
+    if (type === 'Delivery' && !addr) return alert("Please enter delivery address");
 
-    let itemsText = cart.map(i => `• ${i.qty}x ${i.name} ${i.size ? '('+i.size+')' : ''} — Rs.${(i.price * i.qty).toLocaleString()}`).join('\n');
-    const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+    const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    
+    let orderText = `*New Order from Website* 🍕\n\n`;
+    orderText += `👤 *Customer:* ${name}\n`;
+    orderText += `📦 *Type:* ${type}\n`;
+    if(type === 'Delivery') orderText += `🏠 *Address:* ${addr}\n`;
+    if(notes) orderText += `📝 *Instructions:* ${notes}\n`;
+    orderText += `\n🛒 *Order Details:*\n`;
+    
+    cart.forEach(item => {
+        orderText += `• ${item.qty}x ${item.name} ${item.size ? '('+item.size+')' : ''} - Rs.${(item.price * item.qty).toLocaleString()}\n`;
+    });
+    
+    orderText += `\n💰 *Total Amount: Rs. ${grandTotal.toLocaleString()}*`;
+    orderText += `\n\n_Delivery charges will be confirmed on call._`;
 
-    const message = `Hello Yumilicious! 🍕\n\nI'd like to place an order:\n\n🛒 *My Order:*\n${itemsText}\n\n💰 *Total: Rs. ${total.toLocaleString()}*\n\n👤 *Name:* ${name}\n📦 *Type:* ${type}\n${type === 'Delivery' ? '🏠 *Address:* ' + addr : ''}\n📝 *Notes:* ${notes || 'None'}\n\nThank you!`;
-
-    const waUrl = `https://wa.me/${menuData.restaurant.whatsapp}?text=${encodeURIComponent(message)}`;
+    const waUrl = `https://wa.me/${menuData.restaurant.whatsapp}?text=${encodeURIComponent(orderText)}`;
     window.open(waUrl, '_blank');
     
-    // Clear cart after ordering
+    // Clear cart and finish
     cart = [];
     saveCart();
     updateCartUI();
