@@ -3,34 +3,18 @@
  * Password: yumilicious2024
  */
 
-// The Correct SHA-256 Hash for "yumilicious2024"
-const AUTH_HASH = "9830560a876a382101676f64242d5964f6932452309852077e6878e1c601447a"; 
+// We will use a plain string for maximum compatibility
+const ADMIN_PASSWORD = "yumilicious2024"; 
 let localData = null;
-
-/**
- * Hashing function using browser-native SubtleCrypto
- */
-async function hashString(str) {
-    const msgUint8 = new TextEncoder().encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
 /**
  * Login Handler
  */
-async function login() {
+function login() {
     const input = document.getElementById('pass-input').value;
     
-    // Safety check for local file opening
-    if (window.location.protocol === 'file:') {
-        alert("NOTE: You are opening this as a local file. The admin panel needs to be uploaded to GitHub or run on a local server to load the menu data properly.");
-    }
-
-    const hashed = await hashString(input);
-    
-    if (hashed === AUTH_HASH) {
+    // Simple, reliable check that works on all browsers and local files
+    if (input === ADMIN_PASSWORD) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
         loadAdminData();
@@ -44,6 +28,8 @@ async function login() {
  */
 async function loadAdminData() {
     try {
+        // This may still fail if opening as a local file due to browser security
+        // It works perfectly once uploaded to GitHub.
         const res = await fetch('./products.json');
         if (!res.ok) throw new Error("Could not find products.json");
         
@@ -58,7 +44,11 @@ async function loadAdminData() {
     } catch (err) {
         console.error(err);
         document.getElementById('price-table-container').innerHTML = 
-            `<p style="color:red">Error: Could not load products.json. Make sure the file exists in the same folder.</p>`;
+            `<div style="color:red; padding:20px; border:1px solid red; background:#fff0f0;">
+                <p><strong>⚠️ Browser Security Block</strong></p>
+                <p>Browsers block loading data files directly from your computer for security.</p>
+                <p><strong>To see your data:</strong> Please upload your files to GitHub Pages. It will work perfectly there!</p>
+            </div>`;
     }
 }
 
@@ -66,6 +56,7 @@ async function loadAdminData() {
  * Update Restaurant object in memory
  */
 function updateRestInfo() {
+    if(!localData) return;
     localData.restaurant.name = document.getElementById('admin-rest-name').value;
     localData.restaurant.whatsapp = document.getElementById('admin-rest-wa').value;
     localData.restaurant.bannerImage = document.getElementById('admin-banner-url').value;
@@ -122,13 +113,14 @@ function updatePrice(catIdx, pIdx, vIdx, newVal) {
     } else {
         localData.categories[catIdx].products[pIdx].price = price;
     }
-    console.log("Updated in memory:", localData.categories[catIdx].products[pIdx].name, price);
 }
 
 /**
  * Generate and download the updated JSON file
  */
 function downloadJSON() {
+    if(!localData) return alert("No data loaded to save.");
+    
     const dataStr = JSON.stringify(localData, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
