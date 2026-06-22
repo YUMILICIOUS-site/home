@@ -7,7 +7,7 @@
     "hours": "24 Hours",
     "bannerImage": "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop",
     "bannerTagline": "Taste the Yum. Feel the Vibe.",
-    "logoImage": "https://placehold.co/200x200/C0392B/FFF8F0?text=YUMILICIOUS"
+    "logoImage": "images/logo.png"
   },
   "categories": [
     {
